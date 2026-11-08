@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useWedding } from "../context/WeddingContext";
 import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
+import { downloadImage } from "../utils/downloadImage";
 
 export default function AdminPage() {
   const {
@@ -173,7 +174,7 @@ export default function AdminPage() {
     },
     photoGrid: {
       display: "grid",
-      gridTemplateColumns: "repeat(2, 1fr)",
+      gridTemplateColumns: "repeat(3, 1fr)",
       gap: 8,
     },
     photoItem: { borderRadius: 10, overflow: "hidden", aspectRatio: "1" },
@@ -203,6 +204,10 @@ export default function AdminPage() {
       lineHeight: 1.5,
     },
   };
+
+  const fotosOrdenadas = [...fotos].sort(
+    (a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0),
+  );
 
   if (loading)
     return (
@@ -383,12 +388,31 @@ export default function AdminPage() {
               <p style={s.empty}>Aun no hay fotos subidas</p>
             ) : (
               <div style={s.photoGrid}>
-                {fotos.map((f) => (
+                {fotosOrdenadas.map((f) => (
                   <div
                     key={f.id}
                     style={{ ...s.photoItem, position: "relative" }}
                   >
                     <img src={f.url} alt="foto boda" style={s.photoImg} />
+                    <button
+                      type="button"
+                      onClick={() => downloadImage(f.url, `foto-boda-${f.id || "imagen"}`)}
+                      style={{
+                        position: "absolute",
+                        left: 6,
+                        bottom: 6,
+                        border: "none",
+                        borderRadius: 999,
+                        padding: "6px 9px",
+                        background: "rgba(255,255,255,0.92)",
+                        color: "#153f63",
+                        fontSize: 11,
+                        fontWeight: 700,
+                        cursor: "pointer",
+                      }}
+                    >
+                      Descargar
+                    </button>
                     <button
                       onClick={() => {
                         if (window.confirm("Borrar esta foto?"))

@@ -34,7 +34,7 @@ export function useImgBBUpload() {
       if (!data.success)
         throw new Error(data.error?.message || "Error al subir");
       setProgress(100);
-      return data.data.url;
+      return data.data.image?.url || data.data.url || data.data.image_url;
     } catch (err) {
       setError(err.message);
       return null;

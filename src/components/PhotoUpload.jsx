@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useWedding } from "../context/WeddingContext";
 import { useImgBBUpload } from "../hooks/useImgBBUpload";
+import { downloadImage } from "../utils/downloadImage";
 
 export default function PhotoUpload() {
   const { fotos, agregarFoto } = useWedding();
@@ -81,7 +82,7 @@ export default function PhotoUpload() {
     },
     grid: {
       display: "grid",
-      gridTemplateColumns: "repeat(2, 1fr)",
+      gridTemplateColumns: "repeat(3, 1fr)",
       gap: 12,
     },
     photoThumb: {
@@ -137,7 +138,26 @@ export default function PhotoUpload() {
       alignItems: "center",
       justifyContent: "center",
     },
+    downloadBtn: {
+      position: "absolute",
+      left: "50%",
+      bottom: 18,
+      transform: "translateX(-50%)",
+      border: "none",
+      borderRadius: 999,
+      padding: "10px 16px",
+      background: "white",
+      color: "#153f63",
+      fontSize: 13,
+      fontWeight: 700,
+      cursor: "pointer",
+      boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
+    },
   };
+
+  const fotosOrdenadas = [...fotos].sort(
+    (a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0),
+  );
 
   return (
     <>
@@ -186,7 +206,7 @@ export default function PhotoUpload() {
 
         {fotos.length > 0 && (
           <div style={s.grid}>
-            {fotos.map((f) => (
+            {fotosOrdenadas.map((f) => (
               <div
                 key={f.id}
                 style={s.photoThumb}
@@ -218,6 +238,15 @@ export default function PhotoUpload() {
             style={s.lightboxImg}
             onClick={(e) => e.stopPropagation()}
           />
+          <button
+            style={s.downloadBtn}
+            onClick={(event) => {
+              event.stopPropagation();
+              downloadImage(lightbox, "foto-boda");
+            }}
+          >
+            Descargar imagen
+          </button>
         </div>
       )}
     </>
